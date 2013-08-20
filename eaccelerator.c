@@ -1766,17 +1766,12 @@ static void check_cache_dir(const char *cache_path)
     int status = stat(cache_path, &buffer);
 
     if (status == 0) {
-        // check permissions
-        if (buffer.st_mode != 777) {
-            status = chmod(cache_path, 0777);
-            if (status < 0) {
-                ea_debug_error(
-                    "eAccelerator: Unable to change cache directory %s permissions\n",
-                    cache_path);
-            }
-        }
+        // probaly created by us (so with 777)
+        // or by sysadmin, which know what we need
     } else {
         // create the cache directory if possible
+        // use 777 to allow other user to create subdir
+        // which seems acceptable under /tmp (default value)
         status = mkdir(cache_path, 0777);
         if (status < 0) {
             ea_debug_error("eAccelerator: Unable to create cache directory %s\n", cache_path);
